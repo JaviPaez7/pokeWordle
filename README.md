@@ -1,4 +1,4 @@
-# Pokewordle Daily  pokeball
+# Pokewordle Daily
 
 Welcome to Pokewordle Daily, a fun and challenging Pokémon guessing game for fans of all ages! Test your Pokémon knowledge with two exciting game modes.
 
