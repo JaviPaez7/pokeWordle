@@ -1,8 +1,8 @@
 export interface ValidatePokemonGuessOutput {
     typeFeedback: 'green' | 'yellow' | 'red';
     secondaryTypeFeedback: 'green' | 'yellow' | 'red';
-    habitatFeedback: 'green' | 'red';
-    evolutionStageFeedback: 'green' | 'red';
+    habitatFeedback: 'green' | 'yellow' | 'red';
+    evolutionStageFeedback: 'green' | 'yellow' | 'red';
     heightFeedback: 'green' | 'yellow' | 'red';
     weightFeedback: 'green' | 'yellow' | 'red';
     heightDirection: 'up' | 'down' | 'none';
