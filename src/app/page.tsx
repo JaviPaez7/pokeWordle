@@ -7,6 +7,8 @@ import { POKEMON_LIST_ALL, getPokemonList, POKEMON_NAME_LIST_ALL, getPokemonName
 import { PokewordleGame } from '@/components/pokewordle-game';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -16,13 +18,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const vsParam = searchParams.get('vs');
   const [generations, setGenerations] = useState(3);
   const [pokemonList, setPokemonList] = useState(POKEMON_LIST_ALL);
   const [pokemonNameList, setPokemonNameList] = useState(POKEMON_NAME_LIST_ALL);
   const [correctPokemonName, setCorrectPokemonName] = useState('');
   const [yesterdaysPokemon, setYesterdaysPokemon] = useState('');
+  const [isPractice, setIsPractice] = useState(false);
 
   useEffect(() => {
     const storedGenerations = localStorage.getItem('pokewordle-generations');
@@ -39,11 +44,29 @@ export default function Home() {
     const newNameList = getPokemonNameList(gen);
     setPokemonList(newList);
     setPokemonNameList(newNameList);
-    
-    setCorrectPokemonName(getDailyPokemon('classic', gen));
+    if (vsParam) {
+      try {
+        const decoded = atob(vsParam);
+        setCorrectPokemonName(decoded);
+      } catch (e) {
+        setCorrectPokemonName(getDailyPokemon('classic', gen));
+      }
+    } else {
+      setCorrectPokemonName(getDailyPokemon('classic', gen));
+    }
     setYesterdaysPokemon(getYesterdaysPokemon('classic', gen));
   };
   
+  const handlePracticeMode = () => {
+    setIsPractice(true);
+    const randomIndex = Math.floor(Math.random() * pokemonList.length);
+    setCorrectPokemonName(pokemonList[randomIndex].name);
+    // Remove vs parameter if it exists
+    if (vsParam) {
+        router.push('/');
+    }
+  };
+
   const correctPokemon = pokemonList.find(p => p.name === correctPokemonName);
 
   return (
@@ -54,13 +77,19 @@ export default function Home() {
       <div className="absolute top-[40%] left-[50%] w-[30%] h-[30%] rounded-full bg-emerald-500/20 blur-[100px] translate-x-[-50%]" />
       
       <div className="z-10 w-full max-w-4xl bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-2xl">
-        <header className="py-8 text-center">
+        <header className="py-8 text-center space-y-4">
           <h1 className="font-headline text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-            Pokewordle Diario
+            {vsParam ? "¡Reto Multijugador!" : isPractice ? "Pokewordle Práctica" : "Pokewordle Diario"}
           </h1>
-          <p className="mt-4 text-lg text-white sm:text-xl">
-            El Pokémon de ayer fue: <span className="font-bold text-white">{yesterdaysPokemon}</span>
-          </p>
+          {!vsParam && !isPractice && (
+            <p className="mt-4 text-lg text-white sm:text-xl">
+              El Pokémon de ayer fue: <span className="font-bold text-white">{yesterdaysPokemon}</span>
+            </p>
+          )}
+          <div className="flex gap-2 justify-center pt-2">
+             {!isPractice && <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">Jugar Modo Práctica (Infinito)</Button>}
+             {isPractice && <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">Siguiente Pokémon</Button>}
+          </div>
         </header>
 
         <main>
@@ -70,6 +99,8 @@ export default function Home() {
               correctPokemon={correctPokemon} 
               pokemonList={pokemonList} 
               pokemonNameList={pokemonNameList} 
+              isPractice={isPractice}
+              isVs={!!vsParam}
             />
           ) : (
             <div className="text-center text-white">Cargando Pokémon...</div>
@@ -88,6 +119,10 @@ export default function Home() {
                     <SelectItem value="3">Gen 1-3 (386 Pokémon)</SelectItem>
                     <SelectItem value="4">Gen 1-4 (493 Pokémon)</SelectItem>
                     <SelectItem value="5">Gen 1-5 (649 Pokémon)</SelectItem>
+                    <SelectItem value="6">Gen 1-6 (721 Pokémon)</SelectItem>
+                    <SelectItem value="7">Gen 1-7 (809 Pokémon)</SelectItem>
+                    <SelectItem value="8">Gen 1-8 (905 Pokémon)</SelectItem>
+                    <SelectItem value="9">Gen 1-9 (1025 Pokémon)</SelectItem>
                 </SelectContent>
             </Select>
         </div>
@@ -104,5 +139,13 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+export default function Home() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Cargando...</div>}>
+            <HomeContent />
+        </Suspense>
+    );
 }
 

@@ -7,12 +7,15 @@ import { GuessInput } from "./guess-input";
 import { GuessGrid } from "./guess-grid";
 import { InstructionsModal } from "./instructions-modal";
 import { ResultsModal } from "./results-modal";
+import { StatsModal } from "./stats-modal";
 import { useToast } from "@/hooks/use-toast";
 import { RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import type { Pokemon } from "@/lib/pokemon";
 import { POKEMON_DATA } from "@/lib/pokemon-data";
 import { comparePokemon } from "@/lib/comparison";
+import { playPokemonCry } from "@/lib/audio";
+import { useStats } from "@/hooks/use-stats";
 
 type GameStatus = "playing" | "won";
 
@@ -27,9 +30,11 @@ interface PokewordleGameProps {
   correctPokemon: Pokemon;
   pokemonList: Pokemon[];
   pokemonNameList: string[];
+  isPractice?: boolean;
+  isVs?: boolean;
 }
 
-export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }: PokewordleGameProps) {
+export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, isPractice = false, isVs = false }: PokewordleGameProps) {
   const [state, setState] = useState<GameState>({
     guesses: [],
     feedback: [],
@@ -39,9 +44,11 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
   const [isResultsModalOpen, setResultsModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const { addGameResult } = useStats();
+  const storageKey = isPractice ? 'pokewordle-state-practice' : isVs ? `pokewordle-state-vs-${correctPokemon.name}` : `pokewordle-state-${correctPokemon.name}`;
 
   useEffect(() => {
-    const storedStateRaw = localStorage.getItem(`pokewordle-state-${correctPokemon.name}`);
+    const storedStateRaw = localStorage.getItem(storageKey);
     if (storedStateRaw) {
       try {
         const storedState: Omit<GameState, 'correctPokemon'> & { correctPokemonName: string } = JSON.parse(storedStateRaw);
@@ -70,7 +77,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
         status: state.status,
         correctPokemonName: state.correctPokemon.name,
       };
-      localStorage.setItem(`pokewordle-state-${correctPokemon.name}`, JSON.stringify(stateToStore));
+      localStorage.setItem(storageKey, JSON.stringify(stateToStore));
     }
   }, [state]);
   
@@ -82,7 +89,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
       correctPokemon: correctPokemon,
     };
     setState(newState);
-    localStorage.removeItem(`pokewordle-state-${correctPokemon.name}`);
+    localStorage.removeItem(storageKey);
     if (showToast) {
       toast({
         title: "Juego reiniciado",
@@ -98,7 +105,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
 
 
   const handleGuess = (guess: string) => {
-    if (state.status !== "playing") return;
+    if (state.status !== "playing") return false;
 
     if (!pokemonNameList.find(p => p.toLowerCase() === guess.toLowerCase())) {
       toast({
@@ -106,7 +113,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
         description: `"${guess}" no está en la lista de Pokémon para las generaciones seleccionadas.`,
         variant: "destructive",
       });
-      return;
+      return false;
     }
     
     if (state.guesses.find(g => g.toLowerCase() === guess.toLowerCase())) {
@@ -115,7 +122,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
           description: `Ya has intentado con "${guess}".`,
           variant: "destructive",
         });
-        return;
+        return false;
     }
 
     const guessedPokemonData = POKEMON_DATA.find(p => p.name.toLowerCase() === guess.toLowerCase());
@@ -123,7 +130,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
 
     if (!guessedPokemonData || !correctPokemonData) {
         toast({ title: 'Error', description: "No se pudieron encontrar los datos del Pokémon.", variant: 'destructive' });
-        return;
+        return false;
     }
 
     const feedbackResult = comparePokemon(guessedPokemonData, correctPokemonData);
@@ -151,8 +158,14 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
     }));
 
     if (isCorrect) {
+      playPokemonCry(correctPokemonData.id);
+      if (!isPractice && !isVs) {
+         addGameResult(true, state.guesses.length + 1, correctPokemon.id);
+      }
       handleGameEnd("won");
     }
+
+    return true;
   };
 
   return (
@@ -165,6 +178,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList }:
           <Button variant="ghost" size="icon" onClick={() => handleReset()} aria-label="Reiniciar juego">
             <RefreshCw className="h-6 w-6 text-white" />
           </Button>
+          <StatsModal />
           <InstructionsModal />
         </div>
       </div>

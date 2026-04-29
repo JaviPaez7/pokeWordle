@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Shield, ShieldPlus, Ruler, Scale, Mountain, Shell, ArrowUp, ArrowDown, Image as ImageIcon, Loader } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { formatValue } from "@/lib/translations";
 
 interface GuessGridProps {
   guesses: string[];
@@ -43,9 +44,9 @@ export function GuessGrid({ guesses, feedback }: GuessGridProps) {
   const showEmptyState = guesses.length === 0;
 
   return (
-    <Card>
+    <Card className="bg-card">
       <CardContent className="p-4 overflow-x-auto">
-        <div className="min-w-[700px]">
+        <div id="guess-grid-capture" className="min-w-[700px] bg-card rounded-md">
           <div className="grid grid-cols-[auto_1.5fr_repeat(6,_1fr)] gap-2 px-2 pb-2 border-b">
             {headers.map((header, i) => (
               <div key={i} className={`flex items-center justify-center gap-2 font-headline text-sm font-bold text-center`}>
@@ -83,18 +84,20 @@ export function GuessGrid({ guesses, feedback }: GuessGridProps) {
                     statKeys.map((key, i) => {
                       const feedbackKey = feedbackKeys[i];
                       const color = currentFeedback ? feedbackColorMap[currentFeedback[feedbackKey] as keyof typeof feedbackColorMap] : "bg-muted";
+                      const delay = i * 150; // stagger 150ms per cell
 
                       return (
                         <div
                           key={i}
                           className={cn(
-                            "h-12 w-full rounded-md flex flex-col items-center justify-center text-center p-1 text-xs sm:text-sm font-semibold text-white",
+                            "h-12 w-full rounded-md flex flex-col items-center justify-center text-center p-1 text-xs sm:text-sm font-semibold text-white animate-flip-in",
                             color
                           )}
+                          style={{ animationDelay: `${delay}ms` }}
                         >
                           {guessedPokemonStats && (
                             <div className="flex items-center gap-1">
-                              <span className="capitalize">{guessedPokemonStats[key]}</span>
+                              <span className="capitalize">{formatValue(key, guessedPokemonStats[key])}</span>
                               {feedbackKey === 'heightFeedback' && currentFeedback.heightDirection === 'up' && <ArrowUp className="h-4 w-4" />}
                               {feedbackKey === 'heightFeedback' && currentFeedback.heightDirection === 'down' && <ArrowDown className="h-4 w-4" />}
                               {feedbackKey === 'weightFeedback' && currentFeedback.weightDirection === 'up' && <ArrowUp className="h-4 w-4" />}

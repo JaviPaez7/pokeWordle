@@ -83,6 +83,10 @@ export default function SilhouettePage() {
                     <SelectItem value="3">Gen 1-3 (386 Pokémon)</SelectItem>
                     <SelectItem value="4">Gen 1-4 (493 Pokémon)</SelectItem>
                     <SelectItem value="5">Gen 1-5 (649 Pokémon)</SelectItem>
+                    <SelectItem value="6">Gen 1-6 (721 Pokémon)</SelectItem>
+                    <SelectItem value="7">Gen 1-7 (809 Pokémon)</SelectItem>
+                    <SelectItem value="8">Gen 1-8 (905 Pokémon)</SelectItem>
+                    <SelectItem value="9">Gen 1-9 (1025 Pokémon)</SelectItem>
                 </SelectContent>
             </Select>
         </div>

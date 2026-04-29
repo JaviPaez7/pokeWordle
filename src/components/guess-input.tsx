@@ -33,7 +33,7 @@ import type { Pokemon } from "@/lib/pokemon";
 
 interface GuessInputProps {
   pokemonList: Pokemon[];
-  onSubmit: (guess: string) => void;
+  onSubmit: (guess: string) => boolean | void;
   disabled: boolean;
 }
 
@@ -45,6 +45,7 @@ const FormSchema = z.object({
 
 export function GuessInput({ pokemonList, onSubmit, disabled }: GuessInputProps) {
   const [open, setOpen] = React.useState(false)
+  const [isShaking, setIsShaking] = React.useState(false)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -55,7 +56,12 @@ export function GuessInput({ pokemonList, onSubmit, disabled }: GuessInputProps)
     const newValue = currentValue === value ? "" : currentValue
     
     if (newValue) {
-      onSubmit(newValue);
+      const result = onSubmit(newValue);
+      if (result === false) {
+        setIsShaking(true);
+        setTimeout(() => setIsShaking(false), 400);
+        return;
+      }
     }
     
     // We don't reset the form here to allow the user to see what they selected
@@ -66,7 +72,7 @@ export function GuessInput({ pokemonList, onSubmit, disabled }: GuessInputProps)
   // We keep the form to handle the popover state and structure, but submit is manual
   return (
     <Form {...form}>
-      <form onSubmit={(e) => e.preventDefault()} className="flex w-full items-start space-x-2">
+      <form onSubmit={(e) => e.preventDefault()} className={cn("flex w-full items-start space-x-2", isShaking && "animate-shake")}>
         <FormField
           control={form.control}
           name="pokemon"
