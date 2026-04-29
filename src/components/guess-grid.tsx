@@ -44,19 +44,19 @@ export function GuessGrid({ guesses, feedback }: GuessGridProps) {
   const showEmptyState = guesses.length === 0;
 
   return (
-    <Card className="bg-card">
-      <CardContent className="p-4 overflow-x-auto">
-        <div id="guess-grid-capture" className="min-w-[700px] bg-card rounded-md">
-          <div className="grid grid-cols-[auto_1.5fr_repeat(6,_1fr)] gap-2 px-2 pb-2 border-b">
+    <div className="w-full">
+      <div className="p-1 overflow-x-auto">
+        <div id="guess-grid-capture" className="min-w-[700px] bg-transparent rounded-md">
+          <div className="grid grid-cols-[auto_1.5fr_repeat(6,_1fr)] gap-2 px-2 pb-3 border-b border-white/10">
             {headers.map((header, i) => (
-              <div key={i} className={`flex items-center justify-center gap-2 font-headline text-sm font-bold text-center`}>
-                {header.icon && <header.icon className="h-4 w-4 text-muted-foreground" />}
+              <div key={i} className={`flex items-center justify-center gap-2 font-headline text-[11px] uppercase tracking-wider font-bold text-white/50`}>
+                {header.icon && <header.icon className="h-3.5 w-3.5" />}
                 <span>{header.label}</span>
               </div>
             ))}
           </div>
 
-          <div className="space-y-2 pt-2">
+          <div className="space-y-3 pt-3">
             {guesses.map((guess, index) => {
               const currentFeedback = feedback[index];
               const guessedPokemonStats = currentFeedback?.guessedPokemon;
@@ -64,44 +64,50 @@ export function GuessGrid({ guesses, feedback }: GuessGridProps) {
 
               return (
                 <div key={index} className="grid grid-cols-[auto_1.5fr_repeat(6,_1fr)] gap-2 animate-in fade-in-50 px-2">
-                  <div className="flex items-center justify-center h-12 rounded-md bg-secondary/80 p-1">
+                  <div className="flex items-center justify-center h-14 rounded-xl bg-white/[0.05] border border-white/10 shadow-inner p-1">
                     {guessedPokemonStats?.photoUrl ? (
-                      <Image src={guessedPokemonStats.photoUrl} alt={guess} width={40} height={40} className="shrink-0" />
+                      <Image src={guessedPokemonStats.photoUrl} alt={guess} width={48} height={48} className="shrink-0 drop-shadow-md" />
                     ) : (
-                       <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                       <ImageIcon className="h-6 w-6 text-white/20" />
                     )}
                   </div>
-                  <div className="flex items-center justify-center h-12 rounded-md bg-secondary/80 font-semibold text-secondary-foreground text-center p-1 text-sm">
+                  <div className="flex items-center justify-center h-14 rounded-xl bg-white/[0.05] border border-white/10 shadow-inner font-semibold text-white text-center p-1 text-sm tracking-wide">
                       {guess}
                   </div>
                   {isLoading ? (
                     Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="h-12 w-full rounded-md bg-muted flex items-center justify-center">
-                            <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
+                        <div key={i} className="h-14 w-full rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center shadow-inner">
+                            <Loader className="h-5 w-5 animate-spin text-white/30" />
                         </div>
                     ))
                   ) : (
                     statKeys.map((key, i) => {
                       const feedbackKey = feedbackKeys[i];
-                      const color = currentFeedback ? feedbackColorMap[currentFeedback[feedbackKey] as keyof typeof feedbackColorMap] : "bg-muted";
-                      const delay = i * 150; // stagger 150ms per cell
+                      const status = currentFeedback ? currentFeedback[feedbackKey] : "empty";
+                      
+                      let colorClass = "bg-white/[0.02] border border-white/5 text-white/50"; // default/empty
+                      if (status === "green") colorClass = "bg-gradient-to-br from-emerald-400 to-emerald-600 border-none text-white shadow-[0_0_15px_rgba(52,211,153,0.3)]";
+                      else if (status === "yellow") colorClass = "bg-gradient-to-br from-amber-400 to-amber-600 border-none text-white shadow-[0_0_15px_rgba(251,191,36,0.3)]";
+                      else if (status === "red") colorClass = "bg-gradient-to-br from-rose-500 to-rose-700 border-none text-white/90 shadow-[0_0_15px_rgba(225,29,72,0.3)]";
+
+                      const delay = i * 150;
 
                       return (
                         <div
                           key={i}
                           className={cn(
-                            "h-12 w-full rounded-md flex flex-col items-center justify-center text-center p-1 text-xs sm:text-sm font-semibold text-white animate-flip-in",
-                            color
+                            "h-14 w-full rounded-xl flex flex-col items-center justify-center text-center p-1 text-xs sm:text-sm font-semibold animate-flip-in shadow-inner",
+                            colorClass
                           )}
                           style={{ animationDelay: `${delay}ms` }}
                         >
                           {guessedPokemonStats && (
                             <div className="flex items-center gap-1">
                               <span className="capitalize">{formatValue(key, guessedPokemonStats[key])}</span>
-                              {feedbackKey === 'heightFeedback' && currentFeedback.heightDirection === 'up' && <ArrowUp className="h-4 w-4" />}
-                              {feedbackKey === 'heightFeedback' && currentFeedback.heightDirection === 'down' && <ArrowDown className="h-4 w-4" />}
-                              {feedbackKey === 'weightFeedback' && currentFeedback.weightDirection === 'up' && <ArrowUp className="h-4 w-4" />}
-                              {feedbackKey === 'weightFeedback' && currentFeedback.weightDirection === 'down' && <ArrowDown className="h-4 w-4" />}
+                              {feedbackKey === 'heightFeedback' && currentFeedback.heightDirection === 'up' && <ArrowUp className="h-4 w-4 drop-shadow-sm" />}
+                              {feedbackKey === 'heightFeedback' && currentFeedback.heightDirection === 'down' && <ArrowDown className="h-4 w-4 drop-shadow-sm" />}
+                              {feedbackKey === 'weightFeedback' && currentFeedback.weightDirection === 'up' && <ArrowUp className="h-4 w-4 drop-shadow-sm" />}
+                              {feedbackKey === 'weightFeedback' && currentFeedback.weightDirection === 'down' && <ArrowDown className="h-4 w-4 drop-shadow-sm" />}
                             </div>
                           )}
                         </div>
@@ -113,15 +119,14 @@ export function GuessGrid({ guesses, feedback }: GuessGridProps) {
             })}
 
             {showEmptyState && (
-              <div className="grid grid-cols-[auto_1.5fr_repeat(6,_1fr)] gap-2 px-2">
+              <div className="grid grid-cols-[auto_1.5fr_repeat(6,_1fr)] gap-2 px-2 opacity-50">
                 {Array.from({ length: 8 }).map((_, index) => (
-                  <div key={index} className="h-12 w-full rounded-md bg-secondary/50" />
+                  <div key={index} className="h-14 w-full rounded-xl border-2 border-dashed border-white/10 bg-transparent" />
                 ))}
               </div>
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
-  );
+      </div>
+    </div>
 }

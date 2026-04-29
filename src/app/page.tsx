@@ -78,13 +78,15 @@ function HomeContent() {
   const correctPokemon = pokemonList.find(p => p.name === correctPokemonName);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 p-4 text-foreground">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/30 blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/30 blur-[120px]" />
-      <div className="absolute top-[40%] left-[50%] w-[30%] h-[30%] rounded-full bg-emerald-500/20 blur-[100px] translate-x-[-50%]" />
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 p-4 text-foreground selection:bg-emerald-500/30">
+      {/* Dynamic Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px] animate-blob-spin mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px] animate-blob-spin-reverse mix-blend-screen" />
+        <div className="absolute top-[40%] left-[50%] w-[30%] h-[30%] rounded-full bg-emerald-500/15 blur-[100px] -translate-x-1/2 animate-float mix-blend-screen" />
+      </div>
       
-      <div className="z-10 w-full max-w-4xl bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-2xl">
+      <div className="z-10 w-full max-w-4xl bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] ring-1 ring-white/5">
         <header className="py-8 text-center space-y-4">
           <h1 className="font-headline text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
             {vsParam ? "¡Reto Multijugador!" : isPractice ? "Pokewordle Práctica" : "Pokewordle Diario"}
@@ -94,24 +96,24 @@ function HomeContent() {
               El Pokémon de ayer fue: <span className="font-bold text-white">{yesterdaysPokemon}</span>
             </p>
           )}
-          <div className="flex flex-wrap gap-2 justify-center pt-2">
+          <div className="flex flex-wrap gap-3 justify-center pt-2">
              {!isPractice && !vsParam && (
-               <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+               <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/30 hover:border-white hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                  Jugar Modo Práctica (Infinito)
                </Button>
              )}
              {isPractice && (
                <>
-                 <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+                 <Button onClick={handlePracticeMode} variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/20 hover:border-emerald-400 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]">
                    Siguiente Pokémon
                  </Button>
-                 <Button onClick={handleExitPractice} variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
+                 <Button onClick={handleExitPractice} variant="ghost" className="text-white/60 hover:text-white hover:bg-white/10 transition-all duration-300">
                    Volver al modo diario
                  </Button>
                </>
              )}
              {vsParam && !isPractice && (
-               <Button onClick={handleExitPractice} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+               <Button onClick={handleExitPractice} variant="outline" className="bg-rose-500/10 text-rose-400 border-rose-500/50 hover:bg-rose-500/20 hover:border-rose-400 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(244,63,94,0.2)] hover:shadow-[0_0_25px_rgba(244,63,94,0.4)]">
                  Salir del Reto y jugar Diario
                </Button>
              )}

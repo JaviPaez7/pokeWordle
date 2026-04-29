@@ -86,17 +86,17 @@ export function GuessInput({ pokemonList, onSubmit, disabled }: GuessInputProps)
                       role="combobox"
                       aria-expanded={open}
                       className={cn(
-                        "w-full justify-between",
-                        !field.value && "text-muted-foreground"
+                        "w-full justify-between h-14 bg-white/[0.05] border-white/10 text-white hover:bg-white/10 hover:text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)] focus:ring-2 focus:ring-emerald-500/50 rounded-xl text-base",
+                        !field.value && "text-white/50"
                       )}
                       disabled={disabled}
                     >
                       {disabled ? 'Adivinando...' : 'Escribe un nombre de Pokémon...'}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-slate-900/90 backdrop-blur-xl border-white/10 rounded-xl overflow-hidden shadow-2xl">
                   <Command>
                     <CommandInput placeholder="Buscar Pokémon..." />
                     <CommandEmpty>Pokémon no encontrado.</CommandEmpty>
