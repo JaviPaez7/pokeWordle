@@ -156,9 +156,12 @@ function HomeContent() {
         </div>
 
 
-        <div className="text-center mt-8">
+        <div className="flex flex-wrap gap-3 justify-center mt-8">
             <Button asChild variant="secondary">
-                <Link href="/silhouette">Jugar al modo Silueta →</Link>
+                <Link href="/silhouette">🔮 Modo Silueta →</Link>
+            </Button>
+            <Button asChild variant="secondary">
+                <Link href="/audio">🔊 Modo Audio →</Link>
             </Button>
         </div>
       </div>
