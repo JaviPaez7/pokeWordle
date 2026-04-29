@@ -67,6 +67,14 @@ function HomeContent() {
     }
   };
 
+  const handleExitPractice = () => {
+    setIsPractice(false);
+    if (vsParam) {
+        router.push('/');
+    }
+    setCorrectPokemonName(getDailyPokemon('classic', generations));
+  };
+
   const correctPokemon = pokemonList.find(p => p.name === correctPokemonName);
 
   return (
@@ -86,9 +94,27 @@ function HomeContent() {
               El Pokémon de ayer fue: <span className="font-bold text-white">{yesterdaysPokemon}</span>
             </p>
           )}
-          <div className="flex gap-2 justify-center pt-2">
-             {!isPractice && <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">Jugar Modo Práctica (Infinito)</Button>}
-             {isPractice && <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">Siguiente Pokémon</Button>}
+          <div className="flex flex-wrap gap-2 justify-center pt-2">
+             {!isPractice && !vsParam && (
+               <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+                 Jugar Modo Práctica (Infinito)
+               </Button>
+             )}
+             {isPractice && (
+               <>
+                 <Button onClick={handlePracticeMode} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+                   Siguiente Pokémon
+                 </Button>
+                 <Button onClick={handleExitPractice} variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
+                   Volver al modo diario
+                 </Button>
+               </>
+             )}
+             {vsParam && !isPractice && (
+               <Button onClick={handleExitPractice} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10">
+                 Salir del Reto y jugar Diario
+               </Button>
+             )}
           </div>
         </header>
 
