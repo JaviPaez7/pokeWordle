@@ -160,7 +160,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
     if (isCorrect) {
       playPokemonCry(correctPokemonData.id);
       if (!isPractice && !isVs) {
-         addGameResult(true, state.guesses.length + 1, correctPokemon.id);
+         addGameResult(true, state.guesses.length + 1, correctPokemon.name);
       }
       handleGameEnd("won");
     }
