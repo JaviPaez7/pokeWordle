@@ -97,7 +97,7 @@ export function GuessInput({ pokemonList, onSubmit, disabled }: GuessInputProps)
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-slate-900/90 backdrop-blur-xl border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                  <Command>
+                  <Command className="bg-transparent">
                     <CommandInput placeholder="Buscar Pokémon..." />
                     <CommandEmpty>Pokémon no encontrado.</CommandEmpty>
                     <CommandList>
