@@ -163,6 +163,9 @@ function HomeContent() {
             <Button asChild variant="secondary">
                 <Link href="/audio">🔊 Modo Audio →</Link>
             </Button>
+            <Button asChild variant="secondary">
+                <Link href="/survival">💀 Modo Supervivencia →</Link>
+            </Button>
         </div>
       </div>
       <footer className="w-full p-8 text-center text-neutral-300">
