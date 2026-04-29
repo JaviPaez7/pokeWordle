@@ -129,4 +129,5 @@ export function GuessGrid({ guesses, feedback }: GuessGridProps) {
         </div>
       </div>
     </div>
+  );
 }
