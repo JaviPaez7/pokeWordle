@@ -17,6 +17,8 @@ import { comparePokemon } from "@/lib/comparison";
 import { playPokemonCry } from "@/lib/audio";
 import { useStats } from "@/hooks/use-stats";
 import { getPokemonHintAction } from "@/app/actions";
+import { usePokedex } from "@/hooks/use-pokedex";
+import { PokedexModal } from "./pokedex-modal";
 
 type GameStatus = "playing" | "won";
 
@@ -48,6 +50,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const { addGameResult } = useStats();
+  const { capture } = usePokedex();
   const storageKey = isPractice ? 'pokewordle-state-practice' : isVs ? `pokewordle-state-vs-${correctPokemon.name}` : `pokewordle-state-${correctPokemon.name}`;
 
   useEffect(() => {
@@ -177,6 +180,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
 
     if (isCorrect) {
       playPokemonCry(correctPokemonData.id);
+      capture(correctPokemonData.id);
       if (!isPractice && !isVs) {
          addGameResult(true, state.guesses.length + 1, correctPokemon.name);
       }
@@ -196,6 +200,7 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
           <Button variant="ghost" size="icon" onClick={() => handleReset()} aria-label="Reiniciar juego">
             <RefreshCw className="h-6 w-6 text-white" />
           </Button>
+          <PokedexModal />
           <StatsModal />
           <InstructionsModal />
         </div>

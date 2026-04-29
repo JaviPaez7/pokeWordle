@@ -13,6 +13,8 @@ import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
 import { playPokemonCry } from "@/lib/audio";
 import { useStats } from "@/hooks/use-stats";
+import { usePokedex } from "@/hooks/use-pokedex";
+import { PokedexModal } from "./pokedex-modal";
 
 
 interface SilhouetteGameProps {
@@ -28,6 +30,7 @@ export function SilhouetteGame({ correctPokemon, pokemonList }: SilhouetteGamePr
   const { toast } = useToast();
   const { width, height } = useWindowSize();
   const { addGameResult } = useStats();
+  const { capture } = usePokedex();
 
   useEffect(() => {
     // If the daily pokemon changes, reset the game
@@ -65,6 +68,7 @@ export function SilhouetteGame({ correctPokemon, pokemonList }: SilhouetteGamePr
       setStatus("won");
       setShowConfetti(true);
       playPokemonCry(correctPokemon.id);
+      capture(correctPokemon.id);
       addGameResult(true, 1, correctPokemon.name);
       localStorage.setItem(`silhouette-status-${correctPokemon.name}`, "won");
       toast({
@@ -88,6 +92,7 @@ export function SilhouetteGame({ correctPokemon, pokemonList }: SilhouetteGamePr
     <div className="w-full space-y-6 flex flex-col items-center">
        {showConfetti && <Confetti width={width} height={height} />}
       <div className="flex justify-end w-full gap-2">
+         <PokedexModal />
          <StatsModal />
          <Button variant="ghost" size="icon" onClick={() => handleReset()} aria-label="Reiniciar juego">
             <RefreshCw className="h-6 w-6 text-white" />
