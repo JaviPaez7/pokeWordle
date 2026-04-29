@@ -9,13 +9,14 @@ import { InstructionsModal } from "./instructions-modal";
 import { ResultsModal } from "./results-modal";
 import { StatsModal } from "./stats-modal";
 import { useToast } from "@/hooks/use-toast";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Lightbulb, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import type { Pokemon } from "@/lib/pokemon";
 import { POKEMON_DATA } from "@/lib/pokemon-data";
 import { comparePokemon } from "@/lib/comparison";
 import { playPokemonCry } from "@/lib/audio";
 import { useStats } from "@/hooks/use-stats";
+import { getPokemonHintAction } from "@/app/actions";
 
 type GameStatus = "playing" | "won";
 
@@ -42,6 +43,8 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
     correctPokemon: correctPokemon,
   });
   const [isResultsModalOpen, setResultsModalOpen] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
+  const [isLoadingHint, setIsLoadingHint] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const { addGameResult } = useStats();
@@ -101,6 +104,21 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
   const handleGameEnd = (status: "won") => {
     setState(prev => ({...prev, status}));
     setResultsModalOpen(true);
+  };
+
+  const handleHintClick = async () => {
+    setIsLoadingHint(true);
+    const result = await getPokemonHintAction(correctPokemon.name);
+    if ('error' in result) {
+      toast({
+        title: "Error al obtener la pista",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
+      setHint(result.hint);
+    }
+    setIsLoadingHint(false);
   };
 
 
@@ -186,11 +204,48 @@ export function PokewordleGame({ correctPokemon, pokemonList, pokemonNameList, i
       <GuessGrid guesses={state.guesses} feedback={state.feedback} />
       
       {state.status === "playing" && (
-        <GuessInput
-          pokemonList={pokemonList}
-          onSubmit={handleGuess}
-          disabled={isPending || state.status !== 'playing'}
-        />
+        <div className="space-y-4">
+          <GuessInput
+            pokemonList={pokemonList}
+            onSubmit={handleGuess}
+            disabled={isPending || state.status !== 'playing'}
+          />
+          
+          <div className="flex flex-col items-center gap-3 mt-4">
+            {!hint && (
+              <Button 
+                variant="outline" 
+                onClick={handleHintClick} 
+                disabled={isLoadingHint}
+                className="bg-indigo-500/10 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-400 transition-all rounded-full px-6"
+              >
+                {isLoadingHint ? (
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Lightbulb className="mr-2 h-4 w-4" />
+                )}
+                Preguntar al Prof. Oak
+              </Button>
+            )}
+
+            {hint && (
+              <div className="w-full bg-indigo-900/40 backdrop-blur-md border border-indigo-500/30 rounded-xl p-4 shadow-[0_0_20px_rgba(99,102,241,0.15)] relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                <div className="flex gap-3">
+                  <div className="shrink-0 pt-1">
+                    <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-400/50">
+                      <Lightbulb className="h-4 w-4 text-indigo-300" />
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-indigo-300 font-bold text-sm mb-1 uppercase tracking-wider">Profesor Oak dice:</h4>
+                    <p className="text-white/90 text-sm italic">{hint}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {state.status !== "playing" && (
