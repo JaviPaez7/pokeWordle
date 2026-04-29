@@ -47,16 +47,13 @@ export default function Home() {
   const correctPokemon = pokemonList.find(p => p.name === correctPokemonName);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-transparent p-4 text-foreground">
-      <Image
-        src="https://i.imgur.com/lZ7s35n.jpeg"
-        alt="Pokemon landscape background"
-        fill
-        className="object-cover -z-10"
-        data-ai-hint="pokemon landscape"
-      />
-      <div className="absolute inset-0 bg-black/50 -z-10" />
-      <div className="w-full max-w-4xl bg-card/50 backdrop-blur-sm rounded-lg p-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 p-4 text-foreground">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/30 blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/30 blur-[120px]" />
+      <div className="absolute top-[40%] left-[50%] w-[30%] h-[30%] rounded-full bg-emerald-500/20 blur-[100px] translate-x-[-50%]" />
+      
+      <div className="z-10 w-full max-w-4xl bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-2xl">
         <header className="py-8 text-center">
           <h1 className="font-headline text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
             Pokewordle Diario
@@ -89,6 +86,8 @@ export default function Home() {
                     <SelectItem value="1">Gen 1 (151 Pokémon)</SelectItem>
                     <SelectItem value="2">Gen 1-2 (251 Pokémon)</SelectItem>
                     <SelectItem value="3">Gen 1-3 (386 Pokémon)</SelectItem>
+                    <SelectItem value="4">Gen 1-4 (493 Pokémon)</SelectItem>
+                    <SelectItem value="5">Gen 1-5 (649 Pokémon)</SelectItem>
                 </SelectContent>
             </Select>
         </div>
